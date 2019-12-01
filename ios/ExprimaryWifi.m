@@ -74,7 +74,7 @@ RCT_EXPORT_METHOD(disconnectFromSSID:(NSString*)ssid
     
 }
 
-RCT_EXPORT_METHOD(requestLocationPermission:(int*)okay
+RCT_EXPORT_METHOD(requestLocationPermission:(int*)checkStatus
                   resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
 
@@ -82,22 +82,17 @@ RCT_EXPORT_METHOD(requestLocationPermission:(int*)okay
         _locationManager = [CLLocationManager new];
         _locationManager.delegate = self;
     }
-
-    // Request location access permission
-    if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
-        [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
-        [_locationManager requestAlwaysAuthorization];
-
-        // On iOS 9+ we also need to enable background updates
-        NSArray *backgroundModes  = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
-        if (backgroundModes && [backgroundModes containsObject:@"location"]) {
-            if ([_locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
-                [_locationManager setAllowsBackgroundLocationUpdates:YES];
-            }
-        }
-    } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
-        [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+    
+    if (
+        CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedWhenInUse ||
+        CLLocationManager.authorizationStatus == kCLAuthorizationStatusAuthorizedAlways
+        ) {
+        resolve(nil);
+    } else if (!checkStatus) {
         [_locationManager requestWhenInUseAuthorization];
+        reject(@"permission_error", @"Location Permission Request Denied", nil);
+    } else {
+        reject(@"permission_error", @"Location Permission Request Denied", nil);
     }
 
 }
