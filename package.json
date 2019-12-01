@@ -1,0 +1,33 @@
+{
+  "name": "react-native-exprimary-wifi",
+  "title": "React Native Exprimary Wifi",
+  "version": "1.0.0",
+  "description": "Custom wifi module for exprimary react native apps",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/github_account/react-native-exprimary-wifi.git",
+    "baseUrl": "https://github.com/github_account/react-native-exprimary-wifi"
+  },
+  "keywords": [
+    "react-native"
+  ],
+  "author": {
+    "name": "Macuyler Dunn",
+    "email": "macuyler@gmail.com"
+  },
+  "license": "MIT",
+  "licenseFilename": "LICENSE",
+  "readmeFilename": "README.md",
+  "peerDependencies": {
+    "react": "^16.8.1",
+    "react-native": ">=0.59.0-rc.0 <1.0.x"
+  },
+  "devDependencies": {
+    "react": "^16.8.3",
+    "react-native": "^0.59.10"
+  }
+}
