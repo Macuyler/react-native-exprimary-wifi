@@ -1,6 +1,7 @@
 #import "ExprimaryWifi.h"
 #import <NetworkExtension/NetworkExtension.h>
 #import <SystemConfiguration/CaptiveNetwork.h>
+#import <CoreLocation/CLLocationManager.h>
 
 
 @implementation ExprimaryWifi
@@ -9,6 +10,8 @@
     return YES;
 }
 RCT_EXPORT_MODULE()
+
+CLLocationManager *_locationManager;
 
 RCT_EXPORT_METHOD(connectToSSID:(NSString*)ssid
                   resolver:(RCTPromiseResolveBlock)resolve
@@ -69,6 +72,34 @@ RCT_EXPORT_METHOD(disconnectFromSSID:(NSString*)ssid
         reject(@"ios_error", @"Not supported in iOS<11.0", nil);
     }
     
+}
+
+RCT_EXPORT_METHOD(requestLocationPermission:(int*)okay
+                  resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+
+    if (!_locationManager) {
+        _locationManager = [CLLocationManager new];
+        _locationManager.delegate = self;
+    }
+
+    // Request location access permission
+    if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationAlwaysUsageDescription"] &&
+        [_locationManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
+        [_locationManager requestAlwaysAuthorization];
+
+        // On iOS 9+ we also need to enable background updates
+        NSArray *backgroundModes  = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"UIBackgroundModes"];
+        if (backgroundModes && [backgroundModes containsObject:@"location"]) {
+            if ([_locationManager respondsToSelector:@selector(setAllowsBackgroundLocationUpdates:)]) {
+                [_locationManager setAllowsBackgroundLocationUpdates:YES];
+            }
+        }
+    } else if ([[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSLocationWhenInUseUsageDescription"] &&
+        [_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
+        [_locationManager requestWhenInUseAuthorization];
+    }
+
 }
 
 RCT_REMAP_METHOD(getCurrentWifiSSID,
