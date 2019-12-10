@@ -106,9 +106,13 @@ RCT_REMAP_METHOD(getCurrentWifiSSID,
     NSArray *ifs = (__bridge_transfer id)CNCopySupportedInterfaces();
     for (NSString *ifnam in ifs) {
         NSDictionary *info = (__bridge_transfer id)CNCopyCurrentNetworkInfo((__bridge CFStringRef)ifnam);
+        NSLog(@"\n================\n interface info: %@\n================\n", info);
         if (info[kSSID]) {
+            NSLog(@"SSID was returned: %@", info[kSSID]);
             resolve(info[kSSID]);
             return;
+        } else {
+            NSLog(@"SSID not returned: %@", info[kSSID]);
         }
     }
     
